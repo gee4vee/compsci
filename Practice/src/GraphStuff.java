@@ -12,34 +12,47 @@ import java.util.Set;
 public class GraphStuff {
     
     /**
-     * A bipartite graph can be sliced with one slice such that the nodes on each side are disconnected. In other words, there exists 
-     * two sets of nodes such that a node in each set is not connected with another node in that same set. Nodes across sets can be 
-     * connected. Assume there are no disjoint graphs.
+     * A bipartite graph can be sliced with one slice such that the nodes within each side are disconnected. In other words, there exist 
+     * two sets of nodes such that every node in each set is disconnected from all other nodes in that same set. Nodes across sets can be 
+     * connected.
      * 
      * @param n One of the nodes in a connected graph.
      * 
-     * @return
+     * @return <code>true</code> if the graph is bipartite; <code>false</code> otherwise.
      */
     public static <T extends Comparable<T>> boolean isBipartite(NAryTreeNode<T> n) {
+        return isKPartite(n, 2);
+    }
+    
+    /**
+     * Returns whether the graph is k-partite.
+     * 
+     * @param n One of the nodes in a connected graph.
+     * @param k The number of expected disjoint sets.
+     * 
+     * @return <code>true</code> if the graph is k-partite; <code>false</code> otherwise.
+     */
+    public static <T extends Comparable<T>> boolean isKPartite(NAryTreeNode<T> n, int k) {
         /*
          * keep track of visited nodes using a set. also use a List to track the disjoint sets.
-         * using BFS, for each node's child, if it has not been visited, check if it is not connected to any 
-         * node in each of the disjoint sets. if it is not, add it. otherwise, continue to next node.
+         * using BFS, for each node's child, if it has not been visited, find a disjoint set such that the child 
+         * is not connected to any of the nodes in that set. add it to that set if it is found.
          * 
-         * continue until all nodes have been visited. if at the end the size of all the disjoint sets equals the number of nodes
-         * in the graph, the graph is bipartite. otherwise, it is not.
+         * continue until all the nodes have been visited. if at the end the cumulative size of all the disjoint sets equals the 
+         * number of nodes in the graph, the graph is k-partite. otherwise, it is not.
          */
         Set<NAryTreeNode<T>> visited = new HashSet<>();
-        // for a single slice we expect two disjoint sets.
-        Set<NAryTreeNode<T>> disjointSet1 = new HashSet<>();
-        Set<NAryTreeNode<T>> disjointSet2 = new HashSet<>();
         List<Set<NAryTreeNode<T>>> disjointSets = new ArrayList<>();
-        disjointSets.add(disjointSet1);
-        disjointSets.add(disjointSet2);
+        // we need to explicitly create the sets now or we fail to detect truly k-partite graphs.
+        for (int i = 0; i < k; i++) {
+            disjointSets.add(new HashSet<>());
+        }
         Queue<NAryTreeNode<T>> q = new LinkedList<>();
         
-        q.offer(n);
-        visited.add(n);
+        if (visited.add(n)) {
+            q.offer(n);
+            findDisjointSetForNode(disjointSets, n);
+        }
         while (!q.isEmpty()) {
             int count = q.size();
             for (int i = 0; i < count; i++) {
@@ -47,7 +60,6 @@ public class GraphStuff {
                 if (node != null) {
                     for (NAryTreeNode<T> child : node.getChildren()) {
                         if (visited.add(child)) { // find a disjoint set for the child if we haven't visited it before.
-                            findDisjointSetForNode(disjointSets, node);
                             q.offer(child);
                             findDisjointSetForNode(disjointSets, child);
                         }
