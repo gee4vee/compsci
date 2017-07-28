@@ -55,8 +55,9 @@ public class GraphStuff {
         }
         while (!q.isEmpty()) {
             int count = q.size();
-            for (int i = 0; i < count; i++) {
+            while (count > 0) {
                 NAryTreeNode<T> node = q.poll();
+                count--;
                 if (node != null) {
                     for (NAryTreeNode<T> child : node.getChildren()) {
                         if (visited.add(child)) { // find a disjoint set for the child if we haven't visited it before.
