@@ -1,10 +1,1 @@
-/AlgorithmStuff.class
-/BinaryTreeNode.class
-/FixedSizeMaxPriorityQueue.class
-/GraphStuff.class
-/ListStuff.class
-/NAryTreeNode.class
-/Node.class
-/TreeStuff$NodeInfo.class
-/TreeStuff$TreeInfo.class
-/TreeStuff.class
+*.class
