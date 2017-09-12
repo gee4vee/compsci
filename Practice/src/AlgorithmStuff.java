@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -243,6 +244,76 @@ public class AlgorithmStuff {
 //        
 //    }
     
+    public static int lengthOfLongestSubstring(String s) {
+        int n = s.length();
+        // this is our sliding window containing the longest possible substring w/o repeating chars.
+        Set<Character> window = new HashSet<>();
+        int ans = 0, i = 0, j = 0;
+        while (i < n && j < n) {
+            // try to extend the range of the sliding window by looking at the next char to see if it's unique.
+            char next = s.charAt(j);
+            if (window.add(next)){
+                j += 1;
+                ans = Math.max(ans, j - i);
+            } else {
+                // the next char already exists in our window, so remove it. this will create a new unique window.
+                window.remove(s.charAt(i++));
+            }
+        }
+        return ans;
+    }
+    
+    /**
+     * Given a string s, find the longest palindromic substring in s. You may assume that the maximum length of s is 1000.
+     * 
+     * Examples:
+     * babad -> bab OR aba
+     * cbbd -> bb
+     * cbcd -> cbc
+     * 
+     * @param s
+     * @return
+     */
+    public static String longestPalindrome(String s) {
+        int n = s.length();
+        // this is our sliding window containing the chars to test.
+        StringBuilder window = new StringBuilder();
+        
+        String candidate = "";
+        int start = 0, end = 0;
+        while (start < n && end < n) {
+            char next = s.charAt(end);
+            window.append(next);
+            // check if this is a palindrome by looping through from the start and from the end simultaneously.
+            boolean windowIsPalindrome = true;
+            for (int j = 0, k = window.length()-1; j < window.length() && k >= 0; j++, k--) {
+                if (window.charAt(j) != window.charAt(k)) {
+                    windowIsPalindrome = false;
+                    break;
+                }
+            }
+
+            if (windowIsPalindrome) {
+                String p = window.toString();
+                if (p.length() > candidate.length()) {
+                    candidate = p;
+                }
+            }
+            if (candidate.length() == n) {
+                break;
+            }
+            // increase the window size.
+            end++;
+            if (end >= n) {
+                // if we've covered all the characters, start building the window again sliding it forward.
+                window = new StringBuilder();
+                start++;
+                end = start;
+            }
+        }
+        return candidate;
+    }
+    
     public static void main(String[] args) {
         System.out.println(findLongestRepeatingStr("aaaa"));
         System.out.println(findLongestRepeatingStr("abc xyz ova hdi abc"));
@@ -257,6 +328,19 @@ public class AlgorithmStuff {
         
         System.out.println("numSetBits2(11)=" + numSetBits2(11L));
         System.out.println("numSetBits2(Long.MAX_VALUE)=" + numSetBits2(Long.MAX_VALUE));
+        System.out.println();
+
+        System.out.println("lengthOfLongestSubstring(abcabcbb)=" + lengthOfLongestSubstring("abcabcbb"));
+        System.out.println("lengthOfLongestSubstring(dvdf)=" + lengthOfLongestSubstring("dvdf"));
+        System.out.println("lengthOfLongestSubstring(bbbbb)=" + lengthOfLongestSubstring("bbbbb"));
         
+        System.out.println();
+        System.out.println("longestPalindrom(babad)=" + longestPalindrome("babad"));
+        System.out.println("longestPalindrom(cbbd)=" + longestPalindrome("cbbd"));
+        System.out.println("longestPalindrom(cbcd)=" + longestPalindrome("cbcd"));
+        System.out.println("longestPalindrom(aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)\n=" 
+                            + longestPalindrome("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
+        System.out.println("longestPalindrom(abababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababa)\n=" 
+                            + longestPalindrome("abababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababa"));
     }
 }
